@@ -1,0 +1,6 @@
+*.log
+*.conf
+*.swp
+*.swo
+*.txt
+*.pyc
