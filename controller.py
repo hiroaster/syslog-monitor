@@ -5,9 +5,21 @@
 import os,time
 import sys
 from multiprocessing import Process
+import ConfigParser
 from dbconn import rule_exist,get_desc
 from alert import lx_alert
+from alertsend import smsSend
 ISOTIMEFORMAT='%Y-%m-%d'
+
+
+
+number =[
+    "18310531588",#zt
+    "18611088870",#fwy
+    "18611179855",#gj
+    "18612668657",#zh
+    "18600399904",#x
+    ]
 
 
 def set_redis_log(host,items,timeline,itemstatus,itemtype,itemvalue,itemname):
@@ -28,7 +40,7 @@ def alert_filter(timeline,host,itemname,itemtype,itemstatus,itemvalue,db_ip,db_u
     res = rule_exist(host,itemname,db_ip,db_user,db_pass)
     print res
     if res:
-    portdesc = get_desc(host,itemname,db_ip,db_user,db_pass)
+        portdesc = get_desc(host,itemname,db_ip,db_user,db_pass)
         today = time.strftime(ISOTIMEFORMAT,time.localtime())
         logfile=open('alertmsg-log.log','a+')
         if itemstatus == "1":
@@ -41,7 +53,11 @@ def alert_filter(timeline,host,itemname,itemtype,itemstatus,itemvalue,db_ip,db_u
         print >>logfile,now,msg
         logfile.close()
     if res[0][0] == '0':
-        lx_alert(msg)
+	for idcteam in number:
+
+        smsSend(idcteam,msg)
+    lx_alert(msg)
+    logfile.close()
 
 
 
@@ -64,7 +80,7 @@ def main():
 
     else:
         sys.exit()
-        
+
     timeline = sys.argv[3]
     host = sys.argv[4]
     itemname = sys.argv[5]

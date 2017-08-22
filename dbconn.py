@@ -22,7 +22,7 @@ def rule_exist(hostname,itemname,db_ip,db_user,db_pass):
 
         #results = cursor.execute(sql)
         cursor.execute(sql)
-    results = cursor.fetchall()
+        results = cursor.fetchall()
         if results:
             return results
         else:
@@ -31,7 +31,7 @@ def rule_exist(hostname,itemname,db_ip,db_user,db_pass):
         print "Error: unable to fecth data"
     db.close()
 
-def get_desc(hostname,itemname,db_ip,db_user,db_pass)):
+def get_desc(hostname,itemname,db_ip,db_user,db_pass):
 
     db = MySQLdb.connect(db_ip,db_user,db_pass,"enigma" )
     cursor = db.cursor()
