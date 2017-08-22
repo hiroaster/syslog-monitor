@@ -53,11 +53,10 @@ def alert_filter(timeline,host,itemname,itemtype,itemstatus,itemvalue,db_ip,db_u
         print >>logfile,now,msg
         logfile.close()
     if res[0][0] == '0':
-	for idcteam in number:
-
-        smsSend(idcteam,msg)
-    lx_alert(msg)
-    logfile.close()
+        for idcteam in number:
+            smsSend(idcteam,msg)
+        lx_alert(msg)
+        logfile.close()
 
 
 
