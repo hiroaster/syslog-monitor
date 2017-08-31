@@ -2,9 +2,10 @@
 
 ospf_label='OSPF/5/OSPF_NBR_CHG'
 syslog_label='IFNET/2/'
+board_label='DEVM/1/hwBoard'
 
-#cat demo.txt | while read line
-while read line
+cat demo.txt | while read line
+#while read line
 
 do
 
@@ -30,6 +31,26 @@ do
          fi
           #syslog end
 
+
+    elif [[ "$line" =~ "$board_label" ]] #board start
+        then
+        itemtype="BOARD"
+         date=`echo $line | awk '{print $1,$2,$3}'`
+         device=`echo $line | awk '{print $4}'`
+     item=`echo $line |sed 's/.*EntPhysicalName=//g' | sed 's/, EntityType.*//g'| sed 's/ /./g'`
+         status=`echo $line | sed 's/.*DEVM\/1\///g' | sed 's/(.*//g'`
+         if [[ "$status" =~ "clear"  ]]
+         then
+         status_value=1
+         elif [[ "$status" =~ "active"  ]]
+     then
+         status_value=0
+         fi
+          #syslog end
+
+
+
+
     elif [[ "$line" =~ "$ospf_label" ]] #ospf start
         then
         itemtype="OSPF"
@@ -49,6 +70,6 @@ do
 
     fi
 python controller.py $date $device $item $status_value $itemtype $status
-#echo $date $device $item $status_value $itemtype $status
+echo $date $device $item $status_value $itemtype $status
 #log-alert
 done
