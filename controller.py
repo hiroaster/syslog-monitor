@@ -9,7 +9,7 @@ from multiprocessing import Process
 import ConfigParser
 from dbconn import rule_exist, get_desc
 from alert import lx_alert
-from alertsend import smsSend
+from alertsend import smsSend,postInfo
 ISOTIMEFORMAT = '%Y-%m-%d'
 
 
@@ -37,6 +37,8 @@ def set_redis_log(host, items, timeline, itemstatus, itemtype, itemvalue, itemna
 
 
 def alert_filter(timeline, host, itemname, itemtype, itemstatus, itemvalue, db_ip, db_user, db_pass):
+    payload = {}
+
     sendsw = 0
     today = time.strftime(ISOTIMEFORMAT, time.localtime())
     logfile = open('alertmsg-log.log', 'a+')
@@ -71,9 +73,18 @@ def alert_filter(timeline, host, itemname, itemtype, itemstatus, itemvalue, db_i
                 "-" + host + "-" + itemname + ":" + itemvalue
 
     if sendsw == 1:
+        payload['alertstatus'] = itemvalue
+        payload['statuscode'] = itemstatus
+        # payload['messageid'] = itemstatus
+        payload['alertitem'] = itemname
+        payload['alertsource'] = "SYSLOG"
+        payload['alerttime'] = timeline
+        payload['alerthost'] = host
+        payload['alertmsg'] = msg
         for idcteam in number:
             smsSend(idcteam, msg)
-        lx_alert(msg)
+            postInfo(payload)
+        lx_alert(payload)
 
     logfile.close()
 
