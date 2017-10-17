@@ -27,10 +27,10 @@ def set_redis_log(host, items, timeline, itemstatus, itemtype, itemvalue, itemna
     today = time.strftime(ISOTIMEFORMAT, time.localtime())
     now = today + " " + timeline
     if itemstatus == "1":
-        msg = "[RECOVER]<" + itemtype + ">" + now + "-" + host + \
+        msg = "[RECOVER][" + itemtype + "]" + now + "-" + host + \
             "-" + itemname + ":change status to " + itemvalue
     else:
-        msg = "[WARNING]<" + itemtype + ">" + now + "-" + host + \
+        msg = "[WARNING][" + itemtype + "]" + now + "-" + host + \
             "-" + itemname + ":change status to " + itemvalue
     print >>sqlog, now, msg
     sqlog.close()
@@ -47,10 +47,10 @@ def alert_filter(timeline, host, itemname, itemtype, itemstatus, itemvalue, db_i
         if res:
             portdesc = get_desc(host, itemname, db_ip, db_user, db_pass)
             if itemstatus == "1":
-                msg = "[RECOVER]<" + itemtype + ">" + timeline + "-" + host + \
+                msg = "[RECOVER][" + itemtype + "]" + timeline + "-" + host + \
                     "-" + itemname + ":" + itemvalue + "(" + portdesc + ")"
             else:
-                msg = "[WARNING]<" + itemtype + ">" + timeline + "-" + host + \
+                msg = "[WARNING][" + itemtype + "]" + timeline + "-" + host + \
                     "-" + itemname + ":" + itemvalue + "(" + portdesc + ")"
 
             # log syslog msg which in database whatever alertoff or not
@@ -64,10 +64,10 @@ def alert_filter(timeline, host, itemname, itemtype, itemstatus, itemvalue, db_i
     else:
         sendsw = 1
         if itemstatus == "1":
-            msg = "[RECOVER]<" + itemtype + ">" + timeline + \
+            msg = "[RECOVER][" + itemtype + "]" + timeline + \
                 "-" + host + "-" + itemname + ":" + itemvalue
         else:
-            msg = "[WARNING]<" + itemtype + ">" + timeline + \
+            msg = "[WARNING][" + itemtype + "]" + timeline + \
                 "-" + host + "-" + itemname + ":" + itemvalue
 
     if sendsw == 1:
@@ -103,10 +103,8 @@ def main():
     itemvalue = sys.argv[8]
     items = itemname + "." + itemtype
 # refresh dashboard and determine if send alert or not
-    p1 = Process(target=set_redis_log, args=(
-        host, items, timeline, itemstatus, itemtype, itemvalue, itemname))
-    p2 = Process(target=alert_filter, args=(timeline, host, itemname,
-                                            itemtype, itemstatus, itemvalue, db_ip, db_user, db_pass))
+    p1 = Process(target=set_redis_log, args=(host, items, timeline, itemstatus, itemtype, itemvalue, itemname))
+    p2 = Process(target=alert_filter, args=(timeline, host, itemname,itemtype, itemstatus, itemvalue, db_ip, db_user, db_pass))
     p1.start()
     p2.start()
   #  p1.join()

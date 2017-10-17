@@ -4,8 +4,8 @@ ospf_label='OSPF/5/OSPF_NBR_CHG'
 syslog_label='IFNET/2/'
 board_label='DEVM/1/hwBoard'
 
-cat demo.txt | while read line
-#while read line
+#cat demo.txt | while read line
+while read line
 
 do
 
@@ -70,6 +70,6 @@ do
 
     fi
 python controller.py $date $device $item $status_value $itemtype $status
-echo $date $device $item $status_value $itemtype $status
+#echo $date $device $item $status_value $itemtype $status
 #log-alert
 done
