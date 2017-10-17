@@ -10,6 +10,7 @@ import ConfigParser
 from dbconn import rule_exist, get_desc
 from alert import lx_alert
 from alertsend import smsSend,postInfo
+import hashlib
 ISOTIMEFORMAT = '%Y-%m-%d'
 
 
@@ -20,6 +21,12 @@ number = [
     "18612668657",  # zh
     "18600399904",  # x
 ]
+
+
+def hash_msg_id(hashmsg):
+    hashid = hashlib.md5(hashmsg).hexdigest()[8:-8]
+    return hashid
+
 
 
 def set_redis_log(host, items, timeline, itemstatus, itemtype, itemvalue, itemname):
@@ -75,16 +82,15 @@ def alert_filter(timeline, host, itemname, itemtype, itemstatus, itemvalue, db_i
     if sendsw == 1:
         payload['alertstatus'] = itemvalue
         payload['statuscode'] = itemstatus
-        # payload['messageid'] = itemstatus
+        payload['messageid'] = hash_msg_id(host+itemname)
         payload['alertitem'] = itemname
-        payload['alertsource'] = "SYSLOG"
         payload['alerttime'] = timeline
         payload['alerthost'] = host
         payload['alertmsg'] = msg
         for idcteam in number:
             smsSend(idcteam, msg)
-            postInfo(payload)
-        lx_alert(payload)
+        postInfo(payload)
+        lx_alert(msg)
 
     logfile.close()
 
